@@ -1,7 +1,7 @@
 const env = process.env.REACT_APP_ENV || 'local';
 
 const ENDPOINTS = {
- local: 'http://localhost:3000'
+ local: process.env.REACT_APP_API
 };
 
 const getEndpoint = () => {
