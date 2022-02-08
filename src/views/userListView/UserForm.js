@@ -33,8 +33,6 @@ const SendTextForm = (props) => {
   const classes = useStyles();
   const [emailBody, setEmailBody] = useState("");
   const {selected} = props;
-  // debugger; // eslint-disable-line
-  console.log('selected', selected);
 
   const sendEmail = async (emails) => {
     try {
