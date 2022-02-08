@@ -1,5 +1,5 @@
-import { call, all, take, put, select } from 'redux-saga/effects';
-import { get, post } from '../../utils/network';
+import { call, all, take, put } from 'redux-saga/effects';
+import { get } from '../../utils/network';
 import {
   fetchUsers,
   saveUsers,
@@ -10,7 +10,7 @@ export function* loadUsers() {
     const action = yield take(fetchUsers);
     try {
       const { page } = action.payload.params;
-      const p = page ? page : 1;
+      const p = page || 1;
       const users  = yield call(get, `https://reqres.in/api/users?page=${p}`);
       yield put(saveUsers({users}));
     } catch (err) {

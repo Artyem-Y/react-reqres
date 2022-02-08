@@ -1,88 +1,25 @@
 import React, {useState, useEffect} from 'react';
-import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
+import {useNavigate} from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import {Avatar, Box} from "@material-ui/core";
-import {getComparator, stableSort} from "../../utils/sort";
-import {SendTextForm} from "./UserForm"
-import {useNavigate} from 'react-router-dom';
 import Button from "@material-ui/core/Button";
-import { useDispatch, useSelector } from 'react-redux';
+import SendTextForm from "./UserForm";
+import {getComparator, stableSort} from "../../utils/sort";
 import { fetchUsers } from '../../store/actions/users';
-import { getUsers } from '../../store/selectors/users';
-
-const headCells = [
-  { id: 'avatar', label: 'Avatar', numeric: false, disablePadding: false },
-  { id: 'id', label: 'Id', numeric: true,  disablePadding: false},
-  { id: 'email', label: 'Email', numeric: false, disablePadding: false },
-  { id: 'first_name', label: 'First Name', numeric: false, disablePadding: false },
-  { id: 'last_name', label: 'Last Name', numeric: false, disablePadding: false },
-]
-
-const EnhancedTableHead = (props) => {
-  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
-  const createSortHandler = (property) => (event) => {
-    onRequestSort(event, property);
-  };
-
-  return (
-    <TableHead>
-      <TableRow>
-        <TableCell padding="checkbox">
-          <Checkbox
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all desserts' }}
-          />
-        </TableCell>
-        {headCells.map((headCell) => (
-          <TableCell
-            key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
-            sortDirection={orderBy === headCell.id ? order : false}
-          >
-            <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id)}
-            >
-              {headCell.label}
-              {orderBy === headCell.id ? (
-                <span className={classes.visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </span>
-              ) : null}
-            </TableSortLabel>
-          </TableCell>
-        ))}
-      </TableRow>
-    </TableHead>
-  );
-}
-
-EnhancedTableHead.propTypes = {
-  classes: PropTypes.object.isRequired,
-  numSelected: PropTypes.number.isRequired,
-  onRequestSort: PropTypes.func.isRequired,
-  onSelectAllClick: PropTypes.func.isRequired,
-  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
-  orderBy: PropTypes.string.isRequired,
-  rowCount: PropTypes.number.isRequired,
-};
+import getUsers from '../../store/selectors/users';
+import EnhancedTableHead from "./Header";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -118,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const ListUsers = () => {
+export const ListUsers = () => {
   const dispatch = useDispatch();
   const classes = useStyles();
   const [order, setOrder] = useState('asc');
@@ -128,30 +65,29 @@ const ListUsers = () => {
   const [dense, setDense] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(6);
 
-  let { users } = useSelector(getUsers);
+  const { users } = useSelector(getUsers);
   const page1 = JSON.parse(localStorage.getItem('page1'));
   const page2 = JSON.parse(localStorage.getItem('page2'));
 
   if (page1 && page1.length !== 0 && users?.page === 1) {
-    users.data = page1
+    users.data = page1;
   }
   if (page2 && page2.length !== 0 && users?.page === 2) {
-    users.data = page2
+    users.data = page2;
   }
 
   if (users?.page) {
-    localStorage.setItem('page' + users?.page, JSON.stringify(users?.data));
+    localStorage.setItem(`page${users?.page}`, JSON.stringify(users?.data));
   }
 
-  const loadUsers = (page) => {
+  const loadUsers = (p) => {
     dispatch(
-      fetchUsers({page})
+      fetchUsers({page: p})
     );
   };
 
-
   useEffect(() => {
-    loadUsers(page + 1)
+    loadUsers(page + 1);
   }, []);
 
   const handleLimitChange = (event) => {
@@ -159,8 +95,9 @@ const ListUsers = () => {
   };
 
   const handlePageChange = async (event, newPage) => {
-    if (newPage > Math.ceil(users?.total / rowsPerPage) - 1) return;
-    await loadUsers(newPage + 1)
+    if (newPage > Math.ceil(users.total / rowsPerPage) - 1) return;
+    if (users) setPage(users.page - 1);
+    await loadUsers(newPage + 1);
   };
 
   const handleRequestSort = (event, property) => {
@@ -186,7 +123,7 @@ const ListUsers = () => {
       newSelected = newSelected.concat(selected, email);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected?.length - 1) {
+    } else if (selected && selectedIndex === selected.length - 1) {
       newSelected = newSelected.concat(selected.slice(0, -1));
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
@@ -202,13 +139,13 @@ const ListUsers = () => {
     setDense(event.target.checked);
   };
 
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const edit = (e, row) => {
-    navigate(`/app/users/${row.id}/edit`,  { state: {row, page: users?.page} })
-  }
+    navigate(`/app/users/${row.id}/edit`,  { state: {row, page: users?.page} });
+  };
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, users?.data?.length - page * rowsPerPage);
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, users.data.length - page * rowsPerPage);
 
   return (
     <div className={classes.root}>
@@ -271,8 +208,9 @@ const ListUsers = () => {
                       <TableCell>{row.first_name}</TableCell>
                       <TableCell>{row.last_name}</TableCell>
                       <TableCell>
-                        <Button variant="contained" color="primary"
-                                onClick={(event) => edit(event, row)}>{"Edit"}</Button>
+                        <Button variant="contained"
+                                color="primary"
+                                onClick={(event) => edit(event, row)}>Edit</Button>
                       </TableCell>
 
                     </TableRow>
@@ -289,14 +227,14 @@ const ListUsers = () => {
         {users?.total && (
           <TablePagination
             component="div"
-            count={users?.total}
-            page={users?.page - 1}
+            count={users.total}
+            page={users.page - 1}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleLimitChange}
             rowsPerPage={rowsPerPage}
             rowsPerPageOptions={[]}
             labelDisplayedRows={({from}) => {
-              return `${from}-${(users?.page - 1) * rowsPerPage + rowsPerPage} of ${users?.total}`;
+              return `${from}-${(users.page - 1) * rowsPerPage + rowsPerPage} of ${users.total}`;
             }}
           />
         )}
@@ -308,6 +246,6 @@ const ListUsers = () => {
       <SendTextForm numSelected={selected?.length} selected={selected} />
     </div>
   );
-}
+};
 
-export default ListUsers
+export default ListUsers;

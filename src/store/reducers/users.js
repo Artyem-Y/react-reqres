@@ -12,7 +12,7 @@ export const defaultState = {
   error: null
 };
 
-export default (state = defaultState, action) => {
+const userReducer = (state = defaultState, action) => {
   switch (action.type) {
     case SAVE_USERS: {
         const { users, error } = action.payload;
@@ -23,7 +23,7 @@ export default (state = defaultState, action) => {
         return {
           ...state,
           // allUsers: [...items, ...users?.data],
-          data: [...users?.data],
+          data: [...users.data],
           page: users?.page,
           per_page: users?.per_page,
           total : users?.total,
@@ -36,3 +36,5 @@ export default (state = defaultState, action) => {
       return state;
   }
 };
+
+export default userReducer;

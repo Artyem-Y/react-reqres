@@ -2,7 +2,7 @@ import TextField from "@material-ui/core/TextField";
 import React, {useState} from "react";
 import {Button, Paper, makeStyles} from "@material-ui/core";
 import Box from "@material-ui/core/Box";
-import {useLocation, useNavigate} from 'react-router-dom';;
+import {useLocation, useNavigate} from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,16 +28,16 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const UserEditFrom = () => {
+const UserEditFrom = () => {
   const classes = useStyles();
-  const location = useLocation()
+  const location = useLocation();
   const [firstName, setFirstName] = useState(location.state.row.first_name);
   const [lastName, setLastName] = useState(location.state.row.last_name);
   const [email, setEmail] = useState(location.state.row.email);
 
-  let page1 = JSON.parse(localStorage.getItem('page1'));
-  let page2 = JSON.parse(localStorage.getItem('page2'));
-  let navigate = useNavigate();
+  const page1 = JSON.parse(localStorage.getItem('page1'));
+  const page2 = JSON.parse(localStorage.getItem('page2'));
+  const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -47,27 +47,25 @@ export const UserEditFrom = () => {
       first_name: firstName,
       last_name: lastName,
       email
-    }
+    };
 
     if (location.state.page === 1) {
-      let objIndex = page1.findIndex((obj => obj.id === user.id));
+      const objIndex = page1.findIndex((obj => obj.id === user.id));
       page1[objIndex] = user;
       localStorage.setItem('page1', JSON.stringify(page1));
     }
 
     if (location.state.page === 2) {
-      let objIndex = page1.findIndex((obj => obj.id === user.id));
+      const objIndex = page1.findIndex((obj => obj.id === user.id));
       page1[objIndex] = user;
       localStorage.setItem('page2', JSON.stringify(page2));
     }
-    navigate('/app/users')
-  }
-
+    navigate('/app/users');
+  };
 
   const back = () => {
-    navigate('/app/users')
-  }
-
+    navigate('/app/users');
+  };
 
   return (
     <Paper>
@@ -102,7 +100,8 @@ export const UserEditFrom = () => {
               <Button type="submit" variant="contained" color="primary">
                 Edit
               </Button>
-              <Button variant="contained" color="primary"
+              <Button variant="contained"
+                      color="primary"
                       onClick={() => back()}>Back to users</Button>
             </div>
           </form>
@@ -110,3 +109,5 @@ export const UserEditFrom = () => {
     </Paper>
   );
 };
+
+export default UserEditFrom;

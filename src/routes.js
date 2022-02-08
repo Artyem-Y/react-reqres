@@ -1,8 +1,8 @@
 import React from "react";
 import { Navigate } from 'react-router-dom';
 import DashboardLayout from './layout/DashboardLayout';
-import ListUsers from "./views/userListView/ListUsers";
-import {UserEditFrom} from "./views/userListView/UserEdit";
+import { ListUsers } from "./views/userListView/UsersTable";
+import UserEditFrom from "./views/userListView/UserEdit";
 
 const routes = [
   { path: 'app', element: <DashboardLayout />,

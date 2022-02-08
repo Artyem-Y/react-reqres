@@ -1,5 +1,5 @@
-import TextField from "@material-ui/core/TextField";
 import React, {useState} from "react";
+import TextField from "@material-ui/core/TextField";
 import {Button, Paper, makeStyles} from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import PropTypes from "prop-types";
@@ -29,16 +29,12 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const SendTextForm = (props) => {
+const SendTextForm = (props) => {
   const classes = useStyles();
   const [emailBody, setEmailBody] = useState("");
   const {selected} = props;
-
-  const onTextChange = (e) => setEmailBody(e.target.value);
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    await sendEmail(selected)
-  }
+  // debugger; // eslint-disable-line
+  console.log('selected', selected);
 
   const sendEmail = async (emails) => {
     try {
@@ -48,16 +44,23 @@ export const SendTextForm = (props) => {
     }
   };
 
+
+  const onTextChange = (e) => setEmailBody(e.target.value);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await sendEmail(selected);
+  };
+
   return (
     <Paper>
-      {selected?.length > 0 && (
+      {selected && selected?.length > 0 && (
         <Box maxWidth={600}>
           <h3 className={classes.title}>Send Email</h3>
           <form className={classes.root} onSubmit={handleSubmit}>
             <TextField
               onChange={onTextChange}
               value={emailBody}
-              label={"Enter text..."}
+              label="Enter text..."
               inputProps={{
                 maxLength: 120,
               }}
@@ -74,5 +77,7 @@ export const SendTextForm = (props) => {
 };
 
 SendTextForm.propTypes = {
-  numSelected: PropTypes.number.isRequired,
+  selected: PropTypes.array.isRequired,
 };
+
+export default SendTextForm;

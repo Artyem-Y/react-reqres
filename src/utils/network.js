@@ -16,7 +16,7 @@ export async function get(url, params, headerParams) {
 
 export async function post(url, data, params) {
   const token = localStorage.getItem('token');
-  const response = await axios.post(`${endpoint.api}/`+ url, data, {
+  const response = await axios.post(`${endpoint.api}/${url}`, data, {
     headers: {
       proxyAuthorization: token,
     },
