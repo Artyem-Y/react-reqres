@@ -61,7 +61,7 @@ export const ListUsers = () => {
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('id');
   const [selected, setSelected] = useState([]);
-  const [page, setPage] = useState(0);
+  const [page] = useState(0);
   const [dense, setDense] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(6);
 
@@ -96,7 +96,6 @@ export const ListUsers = () => {
 
   const handlePageChange = async (event, newPage) => {
     if (newPage > Math.ceil(users.total / rowsPerPage) - 1) return;
-    if (users) setPage(users.page - 1);
     await loadUsers(newPage + 1);
   };
 
